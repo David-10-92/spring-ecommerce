@@ -1,5 +1,7 @@
 package com.example.springecommerce.api.controller.auth;
 
+import com.example.springecommerce.api.model.LoginBody;
+import com.example.springecommerce.api.model.LoginResponse;
 import com.example.springecommerce.api.model.RegistrationBody;
 import com.example.springecommerce.exception.UserAlreadyExistsException;
 import com.example.springecommerce.service.UserService;
@@ -29,6 +31,18 @@ public class AuthenticationController {
             return ResponseEntity.ok().build();
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody){
+        String jwt = userService.loginUser(loginBody);
+        if (jwt == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }else {
+            LoginResponse response = new LoginResponse();
+            response.setJwt(jwt);
+            return ResponseEntity.ok(response);
         }
     }
 }
